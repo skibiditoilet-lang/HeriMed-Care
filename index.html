@@ -1,66 +1,1876 @@
-<textarea rows="3" placeholder="Mô tả cảm giác sức khỏe hiện tại..." class="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"></textarea>
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HeriMed Care - Theo dõi đơn thuốc</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- QR Scanner -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .tab-content {
+            animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #reader {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        #reader video {
+            border-radius: 16px;
+        }
+
+        .medicine-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .medicine-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .hidden-section {
+            display: none;
+        }
+    </style>
+</head>
+
+
+<body class="bg-stone-50 text-stone-800">
+
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
+
+    <header class="bg-emerald-900 text-white sticky top-0 z-50 shadow-lg">
+
+        <div class="max-w-6xl mx-auto px-4">
+
+            <div class="flex items-center justify-between py-4">
+
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold">
+                        🌿 HeriMed Care
+                    </h1>
+
+                    <p class="text-emerald-200 text-xs md:text-sm">
+                        Chăm sóc sức khỏe thông minh
+                    </p>
+                </div>
+
+                <div class="hidden md:block text-emerald-200 text-sm">
+                    Theo dõi đơn thuốc bằng QR
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="flex gap-1 overflow-x-auto pb-2">
+
+                <button
+                    id="nav-home"
+                    onclick="showTab('home')"
+                    class="nav-btn whitespace-nowrap px-4 py-2 rounded-lg bg-emerald-800 text-amber-300 font-semibold">
+                    🏠 Tổng quan
+                </button>
+
+                <button
+                    id="nav-qr"
+                    onclick="showTab('qr')"
+                    class="nav-btn whitespace-nowrap px-4 py-2 rounded-lg text-emerald-200 hover:bg-emerald-800">
+                    📱 Quét QR
+                </button>
+
+                <button
+                    id="nav-medicine"
+                    onclick="showTab('medicine')"
+                    class="nav-btn whitespace-nowrap px-4 py-2 rounded-lg text-emerald-200 hover:bg-emerald-800">
+                    💊 Đơn thuốc
+                </button>
+
+                <button
+                    id="nav-herbs"
+                    onclick="showTab('herbs')"
+                    class="nav-btn whitespace-nowrap px-4 py-2 rounded-lg text-emerald-200 hover:bg-emerald-800">
+                    🌿 Dược liệu
+                </button>
+
+                <button
+                    id="nav-appointment"
+                    onclick="showTab('appointment')"
+                    class="nav-btn whitespace-nowrap px-4 py-2 rounded-lg text-emerald-200 hover:bg-emerald-800">
+                    📅 Đặt lịch
+                </button>
+
+            </nav>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ================================================= -->
+    <!-- MAIN -->
+    <!-- ================================================= -->
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+
+
+        <!-- ================================================= -->
+        <!-- TAB HOME -->
+        <!-- ================================================= -->
+
+        <section id="tab-home" class="tab-content">
+
+            <div class="bg-gradient-to-r from-emerald-900 to-emerald-700 text-white rounded-3xl p-7 md:p-10 shadow-lg">
+
+                <p class="text-emerald-200 mb-2">
+                    HERIMED CARE
+                </p>
+
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">
+                    Quản lý sức khỏe<br>
+                    đơn giản hơn.
+                </h2>
+
+                <p class="text-emerald-100 max-w-2xl mb-6">
+                    Sử dụng mã QR để xem thông tin đơn thuốc,
+                    theo dõi lịch dùng thuốc và tìm hiểu
+                    thêm về các dược liệu.
+                </p>
+
+                <button
+                    onclick="showTab('qr')"
+                    class="bg-amber-300 text-emerald-950 font-bold px-6 py-3 rounded-xl hover:bg-amber-200 transition">
+                    📱 Quét mã QR
+                </button>
+
+            </div>
+
+
+            <!-- CARDS -->
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
+
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-200">
+
+                    <div class="text-4xl mb-3">
+                        📱
                     </div>
 
-                    <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition shadow-md">
-                        Xác Nhận Đặt Lịch Hẹn
-                    </button>
-                </form>
+                    <h3 class="font-bold text-lg mb-2">
+                        Quét mã QR
+                    </h3>
+
+                    <p class="text-sm text-stone-600">
+                        Quét mã QR trên đơn thuốc để
+                        nhanh chóng xem thông tin.
+                    </p>
+
+                </div>
+
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-200">
+
+                    <div class="text-4xl mb-3">
+                        💊
+                    </div>
+
+                    <h3 class="font-bold text-lg mb-2">
+                        Theo dõi đơn thuốc
+                    </h3>
+
+                    <p class="text-sm text-stone-600">
+                        Xem thuốc, liều dùng và lịch
+                        sử dụng thuốc.
+                    </p>
+
+                </div>
+
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-200">
+
+                    <div class="text-4xl mb-3">
+                        🌿
+                    </div>
+
+                    <h3 class="font-bold text-lg mb-2">
+                        Tra cứu dược liệu
+                    </h3>
+
+                    <p class="text-sm text-stone-600">
+                        Tìm hiểu thông tin cơ bản về
+                        các loại dược liệu.
+                    </p>
+
+                </div>
+
             </div>
+
+
+            <!-- DEMO PRESCRIPTION -->
+
+            <div class="bg-white rounded-2xl p-6 mt-6 border border-stone-200">
+
+                <div class="flex items-center justify-between gap-4 mb-4">
+
+                    <div>
+                        <h3 class="font-bold text-xl">
+                            📋 Đơn thuốc gần đây
+                        </h3>
+
+                        <p class="text-sm text-stone-500">
+                            Dữ liệu minh họa
+                        </p>
+                    </div>
+
+                    <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-bold">
+                        Đang theo dõi
+                    </span>
+
+                </div>
+
+
+                <div class="grid md:grid-cols-3 gap-4">
+
+                    <div class="bg-stone-50 rounded-xl p-4">
+                        <p class="text-xs text-stone-500">
+                            Mã đơn
+                        </p>
+
+                        <p class="font-bold">
+                            HM-2026-001
+                        </p>
+                    </div>
+
+
+                    <div class="bg-stone-50 rounded-xl p-4">
+                        <p class="text-xs text-stone-500">
+                            Ngày kê
+                        </p>
+
+                        <p class="font-bold">
+                            12/08/2026
+                        </p>
+                    </div>
+
+
+                    <div class="bg-stone-50 rounded-xl p-4">
+                        <p class="text-xs text-stone-500">
+                            Trạng thái
+                        </p>
+
+                        <p class="font-bold text-emerald-700">
+                            Đang sử dụng
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <button
+                    onclick="showTab('medicine')"
+                    class="mt-5 text-emerald-800 font-bold hover:underline">
+                    Xem chi tiết →
+                </button>
+
+            </div>
+
         </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- TAB QR -->
+        <!-- ================================================= -->
+
+        <section id="tab-qr" class="tab-content hidden">
+
+            <div class="max-w-3xl mx-auto">
+
+
+                <div class="text-center mb-6">
+
+                    <h2 class="text-3xl font-bold text-emerald-900">
+                        📱 Quét mã QR
+                    </h2>
+
+                    <p class="text-stone-600 mt-2">
+                        Đưa mã QR của đơn thuốc vào trước camera.
+                    </p>
+
+                </div>
+
+
+                <div class="bg-white rounded-3xl p-5 md:p-8 shadow-sm border border-stone-200">
+
+
+                    <!-- QR READER -->
+
+                    <div
+                        id="reader"
+                        class="rounded-2xl overflow-hidden">
+                    </div>
+
+
+                    <div class="text-center mt-5">
+
+                        <button
+                            id="startScannerButton"
+                            onclick="startScanner()"
+                            class="bg-emerald-800 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-xl">
+                            📷 Bật camera quét QR
+                        </button>
+
+                        <button
+                            id="stopScannerButton"
+                            onclick="stopScanner()"
+                            class="hidden ml-2 bg-stone-200 hover:bg-stone-300 px-6 py-3 rounded-xl font-semibold">
+                            Dừng camera
+                        </button>
+
+                    </div>
+
+
+                    <!-- MANUAL QR -->
+
+                    <div class="border-t border-stone-200 mt-7 pt-6">
+
+                        <h3 class="font-bold text-lg mb-2">
+                            Hoặc nhập mã đơn thuốc
+                        </h3>
+
+                        <p class="text-sm text-stone-500 mb-3">
+                            Ví dụ: HM-2026-001
+                        </p>
+
+
+                        <div class="flex gap-2">
+
+                            <input
+                                id="manual-code"
+                                type="text"
+                                placeholder="Nhập mã đơn..."
+                                class="flex-1 px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600">
+
+                            <button
+                                onclick="findPrescription()"
+                                class="bg-emerald-800 text-white font-bold px-5 rounded-xl">
+                                Tìm
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- QR RESULT -->
+
+                <div
+                    id="qr-result"
+                    class="hidden mt-6">
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- TAB MEDICINE -->
+        <!-- ================================================= -->
+
+        <section id="tab-medicine" class="tab-content hidden">
+
+
+            <div class="mb-6">
+
+                <h2 class="text-3xl font-bold text-emerald-900">
+                    💊 Đơn thuốc
+                </h2>
+
+                <p class="text-stone-600 mt-2">
+                    Thông tin đơn thuốc minh họa.
+                </p>
+
+            </div>
+
+
+            <!-- PRESCRIPTION HEADER -->
+
+            <div class="bg-white rounded-2xl p-6 border border-stone-200 shadow-sm mb-5">
+
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+                    <div>
+
+                        <p class="text-sm text-stone-500">
+                            Mã đơn thuốc
+                        </p>
+
+                        <h3 class="text-2xl font-bold text-emerald-900">
+                            HM-2026-001
+                        </h3>
+
+                    </div>
+
+
+                    <span class="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-full font-bold text-sm">
+                        ✓ Đang sử dụng
+                    </span>
+
+                </div>
+
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+
+                    <div>
+                        <p class="text-xs text-stone-500">
+                            Ngày kê
+                        </p>
+
+                        <p class="font-semibold">
+                            12/08/2026
+                        </p>
+                    </div>
+
+
+                    <div>
+                        <p class="text-xs text-stone-500">
+                            Số ngày
+                        </p>
+
+                        <p class="font-semibold">
+                            7 ngày
+                        </p>
+                    </div>
+
+
+                    <div>
+                        <p class="text-xs text-stone-500">
+                            Số loại thuốc
+                        </p>
+
+                        <p class="font-semibold">
+                            3
+                        </p>
+                    </div>
+
+
+                    <div>
+                        <p class="text-xs text-stone-500">
+                            Mã bệnh nhân
+                        </p>
+
+                        <p class="font-semibold">
+                            BN-DEMO
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- MEDICINES -->
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+
+                <div class="medicine-card bg-white rounded-2xl p-6 border border-stone-200">
+
+                    <div class="text-4xl mb-4">
+                        💊
+                    </div>
+
+                    <h3 class="font-bold text-xl">
+                        Thuốc A
+                    </h3>
+
+                    <p class="text-sm text-stone-500 mt-1">
+                        Dữ liệu minh họa
+                    </p>
+
+
+                    <div class="mt-5 space-y-3 text-sm">
+
+                        <div class="flex justify-between">
+                            <span>Liều</span>
+                            <strong>1 viên</strong>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Tần suất</span>
+                            <strong>2 lần/ngày</strong>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Thời điểm</span>
+                            <strong>Sáng - tối</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="medicine-card bg-white rounded-2xl p-6 border border-stone-200">
+
+                    <div class="text-4xl mb-4">
+                        💊
+                    </div>
+
+                    <h3 class="font-bold text-xl">
+                        Thuốc B
+                    </h3>
+
+                    <p class="text-sm text-stone-500 mt-1">
+                        Dữ liệu minh họa
+                    </p>
+
+
+                    <div class="mt-5 space-y-3 text-sm">
+
+                        <div class="flex justify-between">
+                            <span>Liều</span>
+                            <strong>1 viên</strong>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Tần suất</span>
+                            <strong>1 lần/ngày</strong>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Thời điểm</span>
+                            <strong>Sau ăn</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="medicine-card bg-white rounded-2xl p-6 border border-stone-200">
+
+                    <div class="text-4xl mb-4">
+                        🌿
+                    </div>
+
+                    <h3 class="font-bold text-xl">
+                        Dược liệu C
+                    </h3>
+
+                    <p class="text-sm text-stone-500 mt-1">
+                        Dữ liệu minh họa
+                    </p>
+
+
+                    <div class="mt-5 space-y-3 text-sm">
+
+                        <div class="flex justify-between">
+                            <span>Liều</span>
+                            <strong>10g</strong>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Tần suất</span>
+                            <strong>1 lần/ngày</strong>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Thời điểm</span>
+                            <strong>Theo hướng dẫn</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- BREWING -->
+
+            <div class="bg-white rounded-2xl p-6 border border-stone-200 mt-6">
+
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+
+                    <div>
+
+                        <h3 class="text-xl font-bold">
+                            🫖 Theo dõi quá trình sắc thuốc
+                        </h3>
+
+                        <p class="text-sm text-stone-500 mt-1">
+                            Chức năng mô phỏng cho dự án.
+                        </p>
+
+                    </div>
+
+
+                    <div class="text-center">
+
+                        <div
+                            id="timer-display"
+                            class="text-4xl font-bold text-emerald-800">
+                            0%
+                        </div>
+
+                        <button
+                            onclick="simulateBrew()"
+                            class="mt-3 bg-emerald-800 text-white font-bold px-5 py-2.5 rounded-xl">
+                            ▶ Bắt đầu
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- TAB HERBS -->
+        <!-- ================================================= -->
+
+        <section id="tab-herbs" class="tab-content hidden">
+
+
+            <div class="mb-6">
+
+                <h2 class="text-3xl font-bold text-emerald-900">
+                    🌿 Tra cứu dược liệu
+                </h2>
+
+                <p class="text-stone-600 mt-2">
+                    Tìm hiểu thông tin cơ bản về các loại dược liệu.
+                </p>
+
+            </div>
+
+
+            <!-- SEARCH -->
+
+            <div class="mb-6">
+
+                <input
+                    id="herb-search"
+                    oninput="filterHerbs()"
+                    type="text"
+                    placeholder="🔍 Tìm dược liệu..."
+                    class="w-full px-5 py-4 bg-white border border-stone-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-600">
+
+            </div>
+
+
+
+            <!-- HERB CARDS -->
+
+            <div
+                id="herb-list"
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+
+                <!-- QUẾ -->
+
+                <article
+                    class="herb-card bg-white rounded-2xl overflow-hidden border border-stone-200 shadow-sm">
+
+                    <div class="h-32 bg-emerald-800 flex items-center justify-center text-6xl">
+                        🌿
+                    </div>
+
+                    <div class="p-5">
+
+                        <h3 class="herb-name text-xl font-bold">
+                            Quế
+                        </h3>
+
+                        <p class="text-sm text-stone-500 mt-1">
+                            Cinnamomum
+                        </p>
+
+                        <p class="mt-4 text-sm leading-6">
+                            Quế là nhóm cây thuộc chi
+                            <i>Cinnamomum</i>. Vỏ cây có
+                            mùi thơm đặc trưng và thường
+                            được sử dụng làm gia vị.
+                        </p>
+
+                        <div class="mt-4 bg-emerald-50 rounded-xl p-3 text-sm">
+                            🌱 <strong>Bộ phận thường dùng:</strong>
+                            vỏ cây.
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- TÁO ĐỎ -->
+
+                <article
+                    class="herb-card bg-white rounded-2xl overflow-hidden border border-stone-200 shadow-sm">
+
+                    <div class="h-32 bg-red-800 flex items-center justify-center text-6xl">
+                        🍎
+                    </div>
+
+                    <div class="p-5">
+
+                        <h3 class="herb-name text-xl font-bold">
+                            Táo đỏ
+                        </h3>
+
+                        <p class="text-sm text-stone-500 mt-1">
+                            Ziziphus jujuba
+                        </p>
+
+                        <p class="mt-4 text-sm leading-6">
+                            Táo đỏ thường được dùng để chỉ
+                            quả của cây táo tàu. Quả có thể
+                            được sử dụng khi tươi hoặc
+                            sau khi sấy khô.
+                        </p>
+
+                        <div class="mt-4 bg-red-50 rounded-xl p-3 text-sm">
+                            🍎 <strong>Bộ phận thường dùng:</strong>
+                            quả.
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- GỪNG -->
+
+                <article
+                    class="herb-card bg-white rounded-2xl overflow-hidden border border-stone-200 shadow-sm">
+
+                    <div class="h-32 bg-amber-700 flex items-center justify-center text-6xl">
+                        🫚
+                    </div>
+
+                    <div class="p-5">
+
+                        <h3 class="herb-name text-xl font-bold">
+                            Gừng
+                        </h3>
+
+                        <p class="text-sm text-stone-500 mt-1">
+                            Zingiber officinale
+                        </p>
+
+                        <p class="mt-4 text-sm leading-6">
+                            Gừng là một loại cây thân thảo
+                            có thân rễ thường được sử dụng
+                            trong thực phẩm.
+                        </p>
+
+                        <div class="mt-4 bg-amber-50 rounded-xl p-3 text-sm">
+                            🌱 <strong>Bộ phận thường dùng:</strong>
+                            thân rễ.
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- NGHỆ -->
+
+                <article
+                    class="herb-card bg-white rounded-2xl overflow-hidden border border-stone-200 shadow-sm">
+
+                    <div class="h-32 bg-yellow-500 flex items-center justify-center text-6xl">
+                        🌱
+                    </div>
+
+                    <div class="p-5">
+
+                        <h3 class="herb-name text-xl font-bold">
+                            Nghệ
+                        </h3>
+
+                        <p class="text-sm text-stone-500 mt-1">
+                            Curcuma longa
+                        </p>
+
+                        <p class="mt-4 text-sm leading-6">
+                            Nghệ là cây thân thảo thuộc họ
+                            Gừng, có thân rễ màu vàng cam.
+                        </p>
+
+                        <div class="mt-4 bg-yellow-50 rounded-xl p-3 text-sm">
+                            🌱 <strong>Bộ phận thường dùng:</strong>
+                            thân rễ.
+                        </div>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- TAB APPOINTMENT -->
+        <!-- ================================================= -->
+
+        <section id="tab-appointment" class="tab-content hidden">
+
+
+            <div class="max-w-2xl mx-auto">
+
+                <div class="text-center mb-7">
+
+                    <h2 class="text-3xl font-bold text-emerald-900">
+                        📅 Đặt lịch tái khám
+                    </h2>
+
+                    <p class="text-stone-600 mt-2">
+                        Điền thông tin để tạo lịch hẹn mẫu.
+                    </p>
+
+                </div>
+
+
+                <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-stone-200">
+
+                    <form onsubmit="handleAppointment(event)">
+
+
+                        <!-- NAME -->
+
+                        <div class="mb-5">
+
+                            <label class="block font-semibold mb-2">
+                                Họ và tên
+                            </label>
+
+                            <input
+                                id="patient-name"
+                                required
+                                type="text"
+                                placeholder="Nhập họ tên"
+                                class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600">
+
+                        </div>
+
+
+                        <!-- PHONE -->
+
+                        <div class="mb-5">
+
+                            <label class="block font-semibold mb-2">
+                                Số điện thoại
+                            </label>
+
+                            <input
+                                id="patient-phone"
+                                required
+                                type="tel"
+                                placeholder="Nhập số điện thoại"
+                                class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600">
+
+                        </div>
+
+
+                        <!-- DATE -->
+
+                        <div class="mb-5">
+
+                            <label class="block font-semibold mb-2">
+                                Ngày hẹn
+                            </label>
+
+                            <input
+                                id="appointment-date"
+                                required
+                                type="date"
+                                class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600">
+
+                        </div>
+
+
+                        <!-- TIME -->
+
+                        <div class="mb-5">
+
+                            <label class="block font-semibold mb-2">
+                                Thời gian
+                            </label>
+
+                            <select
+                                id="appointment-time"
+                                required
+                                class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600">
+
+                                <option value="">
+                                    Chọn thời gian
+                                </option>
+
+                                <option>
+                                    08:00
+                                </option>
+
+                                <option>
+                                    09:00
+                                </option>
+
+                                <option>
+                                    10:00
+                                </option>
+
+                                <option>
+                                    14:00
+                                </option>
+
+                                <option>
+                                    15:00
+                                </option>
+
+                                <option>
+                                    16:00
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- NOTE -->
+
+                        <div class="mb-6">
+
+                            <label class="block font-semibold mb-2">
+                                Ghi chú
+                            </label>
+
+                            <textarea
+                                id="appointment-note"
+                                rows="3"
+                                placeholder="Mô tả cảm giác sức khỏe hiện tại..."
+                                class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600"></textarea>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="w-full bg-emerald-800 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition shadow-md">
+
+                            Xác Nhận Đặt Lịch Hẹn
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <div
+                    id="appointment-result"
+                    class="hidden mt-5 bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-emerald-900">
+                </div>
+
+            </div>
+
+        </section>
+
 
     </main>
 
-    <!-- JAVASCRIPT LOGIC -->
+
+
+    <!-- ================================================= -->
+    <!-- FOOTER -->
+    <!-- ================================================= -->
+
+    <footer class="bg-emerald-950 text-emerald-100 mt-10">
+
+        <div class="max-w-6xl mx-auto px-4 py-8 text-center">
+
+            <h3 class="font-bold text-xl">
+                🌿 HeriMed Care
+            </h3>
+
+            <p class="text-sm mt-2">
+                Nền tảng minh họa quản lý thông tin sức khỏe
+            </p>
+
+            <p class="text-xs text-emerald-400 mt-4">
+                Đây là giao diện demo phục vụ mục đích học tập.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- ================================================= -->
+    <!-- JAVASCRIPT -->
+    <!-- ================================================= -->
+
     <script>
-        // Tab switching logic
+
+
+        // =================================================
+        // DATABASE DEMO
+        // =================================================
+
+        const prescriptions = {
+
+            "HM-2026-001": {
+
+                code: "HM-2026-001",
+
+                date: "12/08/2026",
+
+                status: "Đang sử dụng",
+
+                medicines: [
+
+                    {
+                        name: "Thuốc A",
+                        dose: "1 viên",
+                        frequency: "2 lần/ngày",
+                        time: "Sáng - tối"
+                    },
+
+                    {
+                        name: "Thuốc B",
+                        dose: "1 viên",
+                        frequency: "1 lần/ngày",
+                        time: "Sau ăn"
+                    },
+
+                    {
+                        name: "Dược liệu C",
+                        dose: "10g",
+                        frequency: "1 lần/ngày",
+                        time: "Theo hướng dẫn"
+                    }
+
+                ]
+
+            }
+
+        };
+
+
+
+        // =================================================
+        // TAB SWITCHING
+        // =================================================
+
         function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-emerald-800', 'text-amber-300');
-                btn.classList.add('text-emerald-200');
+
+
+            document
+                .querySelectorAll(".tab-content")
+                .forEach(function (element) {
+
+                    element.classList.add("hidden");
+
+                });
+
+
+            document
+                .querySelectorAll(".nav-btn")
+                .forEach(function (button) {
+
+                    button.classList.remove(
+                        "bg-emerald-800",
+                        "text-amber-300"
+                    );
+
+                    button.classList.add(
+                        "text-emerald-200"
+                    );
+
+                });
+
+
+            const target =
+                document.getElementById(
+                    "tab-" + tabName
+                );
+
+
+            if (target) {
+
+                target.classList.remove("hidden");
+
+            }
+
+
+            const activeButton =
+                document.getElementById(
+                    "nav-" + tabName
+                );
+
+
+            if (activeButton) {
+
+                activeButton.classList.add(
+                    "bg-emerald-800",
+                    "text-amber-300"
+                );
+
+                activeButton.classList.remove(
+                    "text-emerald-200"
+                );
+
+            }
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
             });
 
-            document.getElementById('tab-' + tabName).classList.remove('hidden');
-            const activeBtn = document.getElementById('nav-' + tabName);
-            activeBtn.classList.add('bg-emerald-800', 'text-amber-300');
         }
 
-        // Search Herb filter
+
+
+        // =================================================
+        // QR SCANNER
+        // =================================================
+
+        let qrScanner = null;
+
+
+        function startScanner() {
+
+
+            if (qrScanner) {
+
+                return;
+
+            }
+
+
+            qrScanner =
+                new Html5Qrcode("reader");
+
+
+            const config = {
+
+                fps: 10,
+
+                qrbox: {
+                    width: 250,
+                    height: 250
+                }
+
+            };
+
+
+            qrScanner
+                .start(
+
+                    {
+                        facingMode: "environment"
+                    },
+
+                    config,
+
+                    function (decodedText) {
+
+                        handleQRCode(decodedText);
+
+                    },
+
+                    function () {
+
+                        // Ignore scan errors
+
+                    }
+
+                )
+                .then(function () {
+
+                    document
+                        .getElementById(
+                            "startScannerButton"
+                        )
+                        .classList.add("hidden");
+
+
+                    document
+                        .getElementById(
+                            "stopScannerButton"
+                        )
+                        .classList.remove("hidden");
+
+                })
+                .catch(function (error) {
+
+                    console.error(error);
+
+                    alert(
+                        "Không thể mở camera. Hãy kiểm tra quyền camera của Chrome."
+                    );
+
+                    qrScanner = null;
+
+                });
+
+        }
+
+
+
+        // =================================================
+        // STOP QR SCANNER
+        // =================================================
+
+        function stopScanner() {
+
+
+            if (!qrScanner) {
+
+                return;
+
+            }
+
+
+            qrScanner
+                .stop()
+                .then(function () {
+
+                    qrScanner.clear();
+
+                    qrScanner = null;
+
+
+                    document
+                        .getElementById(
+                            "startScannerButton"
+                        )
+                        .classList.remove("hidden");
+
+
+                    document
+                        .getElementById(
+                            "stopScannerButton"
+                        )
+                        .classList.add("hidden");
+
+                })
+                .catch(function (error) {
+
+                    console.error(error);
+
+                });
+
+        }
+
+
+
+        // =================================================
+        // HANDLE QR
+        // =================================================
+
+        function handleQRCode(decodedText) {
+
+
+            let code =
+                decodedText.trim();
+
+
+            /*
+             * Nếu QR chứa dạng:
+             *
+             * HM-2026-001
+             *
+             * thì tìm trực tiếp.
+             *
+             * Nếu QR chứa URL hoặc text,
+             * vẫn thử tìm mã HM.
+             */
+
+
+            const match =
+                code.match(
+                    /HM-\d{4}-\d+/i
+                );
+
+
+            if (match) {
+
+                code =
+                    match[0].toUpperCase();
+
+            }
+
+
+            const prescription =
+                prescriptions[code];
+
+
+            if (prescription) {
+
+                showPrescription(
+                    prescription
+                );
+
+                stopScanner();
+
+            }
+
+            else {
+
+                showQRMessage(
+                    "Không tìm thấy đơn thuốc với mã: " +
+                    code
+                );
+
+            }
+
+        }
+
+
+
+        // =================================================
+        // MANUAL SEARCH
+        // =================================================
+
+        function findPrescription() {
+
+
+            const input =
+                document
+                    .getElementById(
+                        "manual-code"
+                    );
+
+
+            const code =
+                input.value
+                    .trim()
+                    .toUpperCase();
+
+
+            if (!code) {
+
+                alert(
+                    "Vui lòng nhập mã đơn thuốc."
+                );
+
+                return;
+
+            }
+
+
+            const prescription =
+                prescriptions[code];
+
+
+            if (prescription) {
+
+                showPrescription(
+                    prescription
+                );
+
+            }
+
+            else {
+
+                showQRMessage(
+                    "Không tìm thấy đơn thuốc: " +
+                    code
+                );
+
+            }
+
+        }
+
+
+
+        // =================================================
+        // SHOW PRESCRIPTION
+        // =================================================
+
+        function showPrescription(data) {
+
+
+            const result =
+                document.getElementById(
+                    "qr-result"
+                );
+
+
+            let medicineHTML = "";
+
+
+            data.medicines.forEach(
+                function (medicine) {
+
+                    medicineHTML += `
+
+                        <div class="bg-stone-50 rounded-xl p-4">
+
+                            <div class="flex items-center gap-3">
+
+                                <div class="text-3xl">
+                                    💊
+                                </div>
+
+                                <div>
+
+                                    <h4 class="font-bold">
+                                        ${medicine.name}
+                                    </h4>
+
+                                    <p class="text-sm text-stone-500">
+                                        ${medicine.dose}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 mt-4 text-sm">
+
+                                <div>
+                                    <span class="text-stone-500">
+                                        Tần suất:
+                                    </span>
+
+                                    <strong>
+                                        ${medicine.frequency}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span class="text-stone-500">
+                                        Thời điểm:
+                                    </span>
+
+                                    <strong>
+                                        ${medicine.time}
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            result.innerHTML = `
+
+                <div class="bg-white rounded-3xl p-6 border border-emerald-200 shadow-sm">
+
+                    <div class="flex flex-col md:flex-row md:justify-between gap-4 mb-6">
+
+                        <div>
+
+                            <p class="text-sm text-stone-500">
+                                Đã tìm thấy đơn thuốc
+                            </p>
+
+                            <h3 class="text-2xl font-bold text-emerald-900">
+                                ${data.code}
+                            </h3>
+
+                        </div>
+
+                        <span class="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-full h-fit font-bold">
+                            ✓ ${data.status}
+                        </span>
+
+                    </div>
+
+
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+
+                        <div class="bg-stone-50 rounded-xl p-4">
+
+                            <p class="text-xs text-stone-500">
+                                Ngày kê
+                            </p>
+
+                            <p class="font-bold">
+                                ${data.date}
+                            </p>
+
+                        </div>
+
+
+                        <div class="bg-stone-50 rounded-xl p-4">
+
+                            <p class="text-xs text-stone-500">
+                                Số loại
+                            </p>
+
+                            <p class="font-bold">
+                                ${data.medicines.length}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <h3 class="font-bold text-lg mb-3">
+                        💊 Danh sách thuốc
+                    </h3>
+
+
+                    <div class="space-y-3">
+
+                        ${medicineHTML}
+
+                    </div>
+
+
+                    <p class="text-xs text-stone-400 mt-5">
+                        Dữ liệu trên là dữ liệu minh họa.
+                        Không sử dụng thông tin demo để tự điều trị.
+                    </p>
+
+                </div>
+
+            `;
+
+
+            result.classList.remove("hidden");
+
+        }
+
+
+
+        // =================================================
+        // QR ERROR MESSAGE
+        // =================================================
+
+        function showQRMessage(message) {
+
+
+            const result =
+                document.getElementById(
+                    "qr-result"
+                );
+
+
+            result.innerHTML = `
+
+                <div class="bg-red-50 border border-red-200 text-red-800 rounded-2xl p-5">
+
+                    ❌ ${message}
+
+                </div>
+
+            `;
+
+
+            result.classList.remove("hidden");
+
+        }
+
+
+
+        // =================================================
+        // HERB SEARCH
+        // =================================================
+
         function filterHerbs() {
-            const input = document.getElementById('herb-search').value.toLowerCase();
-            const cards = document.querySelectorAll('.herb-card');
 
-            cards.forEach(card => {
-                const name = card.querySelector('.herb-name').innerText.toLowerCase();
-                if (name.includes(input)) {
-                    card.style.display = "block";
-                } else {
-                    card.style.display = "none";
+
+            const input =
+                document
+                    .getElementById(
+                        "herb-search"
+                    )
+                    .value
+                    .toLowerCase()
+                    .trim();
+
+
+            const cards =
+                document.querySelectorAll(
+                    ".herb-card"
+                );
+
+
+            cards.forEach(
+                function (card) {
+
+
+                    const name =
+                        card
+                            .querySelector(
+                                ".herb-name"
+                            )
+                            .innerText
+                            .toLowerCase();
+
+
+                    if (
+                        name.includes(input)
+                    ) {
+
+                        card.style.display =
+                            "block";
+
+                    }
+
+                    else {
+
+                        card.style.display =
+                            "none";
+
+                    }
+
                 }
-            });
+            );
+
         }
 
-        // Simulate brewing process
+
+
+        // =================================================
+        // BREWING SIMULATION
+        // =================================================
+
+        let brewRunning = false;
+
+
         function simulateBrew() {
-            const display = document.getElementById('timer-display');
+
+
+            if (brewRunning) {
+
+                return;
+
+            }
+
+
+            brewRunning = true;
+
+
+            const display =
+                document.getElementById(
+                    "timer-display"
+                );
+
+
             let progress = 0;
-            display.innerText = "0%";
-            
-            const interval = setInterval(() => {
-                progress += 10;
-                display.innerText = progress + "%";
-                if(progress >= 100) {
-                    clearInterval(interval);
-                    alert("Đã hoàn tất sắc thuốc tự động!");
-                }
-            }, 400);
+
+
+            display.innerText =
+                "0%";
+
+
+            const interval =
+                setInterval(
+                    function () {
+
+
+                        progress += 10;
+
+
+                        display.innerText =
+                            progress + "%";
+
+
+                        if (
+                            progress >= 100
+                        ) {
+
+
+                            clearInterval(
+                                interval
+                            );
+
+
+                            brewRunning =
+                                false;
+
+
+                            alert(
+                                "Đã hoàn tất quá trình mô phỏng!"
+                            );
+
+                        }
+
+
+                    },
+                    300
+                );
+
         }
 
-        // Appointment Form Handler
-        function handleAppointment(e) {
-            e.preventDefault();
-            alert("Đã gửi đăng ký lịch tái khám thành công! Thầy thuốc sẽ xác nhận sớm.");
+
+
+        // =================================================
+        // APPOINTMENT
+        // =================================================
+
+        function handleAppointment(event) {
+
+
+            event.preventDefault();
+
+
+            const name =
+                document
+                    .getElementById(
+                        "patient-name"
+                    )
+                    .value
+                    .trim();
+
+
+            const date =
+                document
+                    .getElementById(
+                        "appointment-date"
+                    )
+                    .value;
+
+
+            const time =
+                document
+                    .getElementById(
+                        "appointment-time"
+                    )
+                    .value;
+
+
+            const result =
+                document.getElementById(
+                    "appointment-result"
+                );
+
+
+            result.innerHTML = `
+
+                <div class="font-bold text-lg mb-2">
+                    ✓ Đăng ký thành công
+                </div>
+
+                <p>
+                    Xin chào <strong>${escapeHTML(name)}</strong>!
+                </p>
+
+                <p>
+                    Lịch hẹn của bạn:
+                    <strong>${escapeHTML(date)}</strong>
+                    lúc
+                    <strong>${escapeHTML(time)}</strong>.
+                </p>
+
+                <p class="text-sm mt-2">
+                    Đây là bản demo, thông tin chưa được
+                    gửi đến cơ sở y tế thực tế.
+                </p>
+
+            `;
+
+
+            result.classList.remove(
+                "hidden"
+            );
+
+
+            event.target.reset();
+
         }
+
+
+
+        // =================================================
+        // HTML ESCAPE
+        // =================================================
+
+        function escapeHTML(text) {
+
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.textContent =
+                text;
+
+
+            return div.innerHTML;
+
+        }
+
+
+
+        // =================================================
+        // DEFAULT TAB
+        // =================================================
+
+        showTab("home");
+
+
     </script>
+
 </body>
+
 </html>
